@@ -7,8 +7,14 @@ namespace Graphics;
 
 partial class Game : GameWindow
 {
-    private int _shaderProgram;
+    static public Camera camera = new Camera(new Vector3(0, 2, 5));
+    CameraController controller = new CameraController(camera);
+    
+    
+    public static Matrix4 _modelMatrix = Matrix4.CreateTranslation(0, 0, 0); //of mesh, needs to bee in mesh class
 
+
+    ShaderManager shaderManager = new();
     public Game(GameWindowSettings gws, NativeWindowSettings nws) : base(gws, nws) { }
 
     protected override void OnLoad()
@@ -16,10 +22,7 @@ partial class Game : GameWindow
         base.OnLoad();
         Console.WriteLine($"OpenGL: {GL.GetString(StringName.Version)}");
         GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-        // === Shaders ===
-        _shaderProgram = CreateShaderProgram("Shaders/shader.vert", "Shaders/shader.frag");
-
+        shaderManager.Load();
         Load();
     }
 
@@ -27,68 +30,33 @@ partial class Game : GameWindow
     {
         base.OnUnload();
         Unload();
-        GL.DeleteProgram(_shaderProgram);
+        shaderManager.Unload();
     }
 
     protected override void OnRenderFrame(FrameEventArgs args)
     {
         base.OnRenderFrame(args);
-
         GL.Clear(ClearBufferMask.ColorBufferBit);
-        GL.UseProgram(_shaderProgram);
+        shaderManager.ApplyShaders();
         Render();
-
+        
         SwapBuffers();
     }
 
     protected override void OnUpdateFrame(FrameEventArgs args)
     {
         base.OnUpdateFrame(args);
-
-        Update();
+        Update((float)args.Time);
 
         if (KeyboardState.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.Escape))
             Close();
     }
 
-    protected override void OnResize(ResizeEventArgs e)
-    {
-        base.OnResize(e);
-        GL.Viewport(0, 0, e.Width, e.Height);
-    }
-
-    private static int CreateShaderProgram(string vertPath, string fragPath)
-    {
-        int vert = CompileShader(ShaderType.VertexShader, File.ReadAllText(vertPath));
-        int frag = CompileShader(ShaderType.FragmentShader, File.ReadAllText(fragPath));
-
-        int program = GL.CreateProgram();
-        GL.AttachShader(program, vert);
-        GL.AttachShader(program, frag);
-        GL.LinkProgram(program);
-
-        GL.GetProgram(program, GetProgramParameterName.LinkStatus, out int ok);
-        if (ok == 0)
-            throw new Exception($"Link error: {GL.GetProgramInfoLog(program)}");
-
-        GL.DeleteShader(vert);
-        GL.DeleteShader(frag);
-
-        return program;
-    }
-
-    private static int CompileShader(ShaderType type, string source)
-    {
-        int shader = GL.CreateShader(type);
-        GL.ShaderSource(shader, source);
-        GL.CompileShader(shader);
-
-        GL.GetShader(shader, ShaderParameter.CompileStatus, out int ok);
-        if (ok == 0)
-            throw new Exception($"Compile error ({type}): {GL.GetShaderInfoLog(shader)}");
-
-        return shader;
-    }
+    // protected override void OnResize(ResizeEventArgs e)
+    // {
+    //     base.OnResize(e);
+    //     GL.Viewport(0, 0, e.Width, e.Height);
+    // }
 }
 
 
