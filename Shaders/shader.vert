@@ -1,17 +1,25 @@
 #version 460 core
 
 layout (location = 0) in vec3 aPosition;
-layout (location = 1) in vec3 aColor;
+layout (location = 1) in vec3 aNormal;
+layout (location = 2) in vec2 aTexCoord;
+layout (location = 3) in vec3 aColor;
 
 uniform mat4 model; //posrotscale of object
 uniform mat4 view; //posrotscale of camera
 uniform mat4 projection; //posrotscale to project on screen
 
 out vec3 FragColor;
+out vec3 FragNormal;
+out vec3 FragPosition;
 
 void main()
 {
     gl_Position = projection * view * model * vec4(aPosition, 1.0);
     
+
+    FragNormal = transpose(inverse(mat3(model))) * aNormal; //inefficent
+    //transform aNormal vector by transpose inverse of model (droping pos)
+    FragPosition = (model * vec4(aPosition, 1.0)).xyz;
     FragColor = aColor;
 }

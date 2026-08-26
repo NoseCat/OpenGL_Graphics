@@ -3,7 +3,7 @@ using OpenTK.Mathematics;
 
 using Graphics;
 
-partial class ShaderManager
+class ShaderManager
 {
     private int program;
     private List<Shader> shaders = new() { //TODO: Maybe seperate basic shaders into a seperate category?
@@ -46,6 +46,9 @@ partial class ShaderManager
         GL.UseProgram(program);
         SetViewMatrix(Game.camera);
         SetProjectionMatrix(Game.camera);
+        SetUniform("lightPos", new Vector3(0, 2, 5));
+        SetUniform("lightColor", new Vector3(1,0,0));
+        SetUniform("viewPos", Game.camera.pos);
     }
 
     public void SetViewMatrix(Camera camera)

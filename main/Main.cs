@@ -11,14 +11,17 @@ partial class Game : GameWindow
     CameraController controller = new CameraController(camera);
     
     public static ShaderManager shaderManager = new();
+    public static MeshManager meshManager = new();
+    public static LightManager lightManager = new();
+
     public Game(GameWindowSettings gws, NativeWindowSettings nws) : base(gws, nws) { }
 
     protected override void OnLoad()
     {
         base.OnLoad();
         Console.WriteLine($"OpenGL: {GL.GetString(StringName.Version)}");
+        
         VSync = VSyncMode.On; //bandaid for fps cap
-
         //depth test
         GL.Enable(EnableCap.DepthTest);
         GL.DepthFunc(DepthFunction.Less);
@@ -37,6 +40,7 @@ partial class Game : GameWindow
         base.OnUnload();
         Unload();
         shaderManager.Unload();
+        meshManager.Dispose();
     }
 
     protected override void OnRenderFrame(FrameEventArgs args)
@@ -44,6 +48,8 @@ partial class Game : GameWindow
         base.OnRenderFrame(args);
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         shaderManager.ApplyShaders();
+        lightManager.Apply();
+        meshManager.Draw();
         Render();
         
         SwapBuffers();

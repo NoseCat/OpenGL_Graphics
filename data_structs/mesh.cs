@@ -76,10 +76,20 @@ public class Mesh
         // in location 0 (pos), we have 3, they are floats (vector3), (they are not normalized), they takes Vertex.Size ram, no offset
         GL.EnableVertexAttribArray(0);
 
-        // Color (1)
+        // Normal (1)
         GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, Vertex.Size, 3 * sizeof(float));
         //offset by 3 floats to skip pos
         GL.EnableVertexAttribArray(1);
+
+        // TexCoord (2)
+        GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, Vertex.Size, 6 * sizeof(float));
+        //offset by 3+3 floats to skip pos
+        GL.EnableVertexAttribArray(2);
+
+        // Color (3)
+        GL.VertexAttribPointer(3, 3, VertexAttribPointerType.Float, false, Vertex.Size, 8 * sizeof(float));
+        //offset by 3+3+2 floats to skip pos + normal + tex
+        GL.EnableVertexAttribArray(3);
 
         // Unbind
         GL.BindVertexArray(0);
@@ -121,4 +131,3 @@ public class Mesh
         GL.DeleteBuffer(ebo);
     }
 }
-
