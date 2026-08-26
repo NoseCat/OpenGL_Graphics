@@ -10,17 +10,23 @@ partial class Game : GameWindow
     static public Camera camera = new Camera(new Vector3(0, 2, 5));
     CameraController controller = new CameraController(camera);
     
-    
-    public static Matrix4 _modelMatrix = Matrix4.CreateTranslation(0, 0, 0); //of mesh, needs to bee in mesh class
-
-
-    ShaderManager shaderManager = new();
+    public static ShaderManager shaderManager = new();
     public Game(GameWindowSettings gws, NativeWindowSettings nws) : base(gws, nws) { }
 
     protected override void OnLoad()
     {
         base.OnLoad();
         Console.WriteLine($"OpenGL: {GL.GetString(StringName.Version)}");
+        VSync = VSyncMode.On; //bandaid for fps cap
+
+        //depth test
+        GL.Enable(EnableCap.DepthTest);
+        GL.DepthFunc(DepthFunction.Less);
+        //backface culling
+        GL.Enable(EnableCap.CullFace);
+        GL.CullFace(TriangleFace.Back);
+        GL.FrontFace(FrontFaceDirection.Ccw);
+
         GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         shaderManager.Load();
         Load();
@@ -36,7 +42,7 @@ partial class Game : GameWindow
     protected override void OnRenderFrame(FrameEventArgs args)
     {
         base.OnRenderFrame(args);
-        GL.Clear(ClearBufferMask.ColorBufferBit);
+        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         shaderManager.ApplyShaders();
         Render();
         

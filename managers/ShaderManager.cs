@@ -46,7 +46,6 @@ partial class ShaderManager
         GL.UseProgram(program);
         SetViewMatrix(Game.camera);
         SetProjectionMatrix(Game.camera);
-        SetModelMatrix(Game._modelMatrix);
     }
 
     public void SetViewMatrix(Camera camera)
