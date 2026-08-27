@@ -1,8 +1,10 @@
 #version 460 core
 
-in vec3 FragColor;
-in vec3 FragNormal;
-in vec3 FragPosition;
+in vec3 Position;
+in vec3 Normal;
+in vec2 TexCoord;
+in vec3 Color;
+
 
 uniform vec3 viewPos;
 
@@ -17,6 +19,8 @@ uniform float ambientStrength = 0.1;
 uniform float specularStrength = 0.5;
 uniform float LinearFade = 0.09; //Attenuation
 uniform float QuadraticFade = 0.032; //Attenuation
+
+uniform sampler2D texture0;
 
 out vec4 FinalColor;
 
@@ -44,14 +48,15 @@ vec3 CalculateLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir)
 
 void main()
 {
-    vec3 norm = normalize(FragNormal);
-    vec3 viewDir = normalize(viewPos - FragPosition);
+    vec3 viewDir = normalize(viewPos - Position);
     
     vec3 result = vec3(0.0);
     for (int i = 0; i < lightCount; i++)
     {
-        result += CalculateLight(lights[i], norm, FragPosition, viewDir);
+        result += CalculateLight(lights[i], Normal, Position, viewDir);
     }
     
-    FinalColor = vec4(result * FragColor, 1.0);
+    vec4 textureColor = texture(texture0, TexCoord);
+    
+    FinalColor = vec4(result * textureColor.rgb * Color, textureColor.a);
 }

@@ -28,7 +28,7 @@ partial class Game
                 new Vector3(1.0f, 1.0f, 1.0f)     // Color (white)
             ),
         ];
-        Mesh mesh = new Mesh(_vertices);
+        Mesh mesh = new Mesh(_vertices, "textures/NoseCat.png");
 
         // Second triangle with proper normals (facing towards +Z and slightly rotated)
         Vertex[] _vertices2 =
@@ -85,5 +85,6 @@ partial class Game
         lightManager.AddLight(light1);
         lightManager.AddLight(light2);
         lightManager.AddLight(light3);
+
     }
 }

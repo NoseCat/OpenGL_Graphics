@@ -14,6 +14,8 @@ public class Mesh
     private Vertex[] vertices;
     private uint[] indices;
 
+    private Texture texture;
+
     // Transform properties
     private Matrix4 model = Matrix4.CreateTranslation(0, 0, 0);
     private Vector3 _position = Vector3.Zero;
@@ -37,7 +39,7 @@ public class Mesh
 
 
     // Constructor for non-indexed meshes
-    public Mesh(Vertex[] vertices, uint[] indices = null)
+    public Mesh(Vertex[] vertices, string _texture = "textures/default.png", uint[] indices = null)
     {
         this.vertices = vertices;
         if (indices == null || indices.Length == 0) //will cause issues if vertex count %3 is not 0
@@ -50,6 +52,8 @@ public class Mesh
         }
         else
             this.indices = indices;
+
+        texture = new Texture(_texture);
 
         SetupMesh();
     }
@@ -118,8 +122,9 @@ public class Mesh
         GL.BindVertexArray(vao);
 
         GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, IntPtr.Zero);
-        //GL.DrawArrays(PrimitiveType.Triangles, 0, vertices.Length);
 
+        texture.Bind(TextureUnit.Texture0);
+        Game.shaderManager.SetUniform("texture0", 0); 
 
         GL.BindVertexArray(0);
     }

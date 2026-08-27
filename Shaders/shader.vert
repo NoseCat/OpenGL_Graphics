@@ -9,17 +9,19 @@ uniform mat4 model; //posrotscale of object
 uniform mat4 view; //posrotscale of camera
 uniform mat4 projection; //posrotscale to project on screen
 
-out vec3 FragColor;
-out vec3 FragNormal;
-out vec3 FragPosition;
+out vec3 Position;
+out vec3 Normal;
+out vec2 TexCoord;
+out vec3 Color;
 
 void main()
 {
     gl_Position = projection * view * model * vec4(aPosition, 1.0);
     
 
-    FragNormal = transpose(inverse(mat3(model))) * aNormal; //inefficent
+    Position = (model * vec4(aPosition, 1.0)).xyz;
+    Normal = normalize(transpose(inverse(mat3(model))) * aNormal); //inefficent
     //transform aNormal vector by transpose inverse of model (droping pos)
-    FragPosition = (model * vec4(aPosition, 1.0)).xyz;
-    FragColor = aColor;
+    TexCoord = aTexCoord;
+    Color = aColor;
 }
