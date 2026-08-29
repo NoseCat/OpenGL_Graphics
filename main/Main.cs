@@ -11,7 +11,7 @@ partial class Game : GameWindow
     CameraController controller = new CameraController(camera);
     
     public static ShaderManager shaderManager = new();
-    public static MeshManager meshManager = new();
+    public static ModelManager modelManager = new();
     public static LightManager lightManager = new();
 
     public Game(GameWindowSettings gws, NativeWindowSettings nws) : base(gws, nws) { }
@@ -26,9 +26,9 @@ partial class Game : GameWindow
         GL.Enable(EnableCap.DepthTest);
         GL.DepthFunc(DepthFunction.Less);
         //backface culling
-        GL.Enable(EnableCap.CullFace);
-        GL.CullFace(TriangleFace.Back);
-        GL.FrontFace(FrontFaceDirection.Ccw);
+        //GL.Enable(EnableCap.CullFace);
+        //GL.CullFace(TriangleFace.Back);
+        //GL.FrontFace(FrontFaceDirection.Ccw);
 
         GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         shaderManager.Load();
@@ -40,7 +40,7 @@ partial class Game : GameWindow
         base.OnUnload();
         Unload();
         shaderManager.Unload();
-        meshManager.Dispose();
+        modelManager.Dispose();
     }
 
     protected override void OnRenderFrame(FrameEventArgs args)
@@ -49,7 +49,7 @@ partial class Game : GameWindow
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         shaderManager.ApplyShaders();
         lightManager.Apply();
-        meshManager.Draw();
+        modelManager.Draw();
         Render();
         
         SwapBuffers();

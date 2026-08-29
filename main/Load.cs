@@ -1,65 +1,12 @@
 using OpenTK.Mathematics;
 
+
 namespace Graphics;
 
 partial class Game
 {
     void Load()
     {
-        // Test triangle with proper normals (facing towards +Z)
-        Vertex[] _vertices =
-        [
-            new Vertex(
-                new Vector3(-0.5f, -0.5f, 0.0f),  // Position
-                new Vector3(0.0f, 0.0f, 1.0f),    // Normal (pointing towards camera)
-                new Vector2(0.0f, 0.0f),          // TexCoord
-                new Vector3(1.0f, 1.0f, 1.0f)     // Color (white)
-            ),
-            new Vertex(
-                new Vector3(0.5f, -0.5f, 0.0f),   // Position
-                new Vector3(0.0f, 0.0f, 1.0f),    // Normal (pointing towards camera)
-                new Vector2(1.0f, 0.0f),          // TexCoord
-                new Vector3(1.0f, 0.0f, 0.0f)     // Color (red)
-            ),
-            new Vertex(
-                new Vector3(0.0f, 0.5f, 0.0f),    // Position
-                new Vector3(0.0f, 0.0f, 1.0f),    // Normal (pointing towards camera)
-                new Vector2(0.5f, 1.0f),          // TexCoord
-                new Vector3(1.0f, 1.0f, 1.0f)     // Color (white)
-            ),
-        ];
-        Mesh mesh = new Mesh(_vertices, "textures/NoseCat.png");
-
-        // Second triangle with proper normals (facing towards +Z and slightly rotated)
-        Vertex[] _vertices2 =
-        [
-            new Vertex(
-                new Vector3(-1.0f, -0.5f, 1.0f),  // Position
-                new Vector3(0.0f, 0.0f, 1.0f),    // Normal (pointing towards camera)
-                new Vector2(0.0f, 0.0f),          // TexCoord
-                new Vector3(0.0f, 1.0f, 0.0f)     // Color (green)
-            ),
-            new Vertex(
-                new Vector3(0.5f, -0.5f, 0.0f),   // Position
-                new Vector3(0.0f, 0.0f, 1.0f),    // Normal (pointing towards camera)
-                new Vector2(1.0f, 0.0f),          // TexCoord
-                new Vector3(1.0f, 1.0f, 0.0f)     // Color (yellow)
-            ),
-            new Vertex(
-                new Vector3(0.0f, 0.5f, 0.0f),    // Position
-                new Vector3(0.0f, 0.0f, 1.0f),    // Normal (pointing towards camera)
-                new Vector2(0.5f, 1.0f),          // TexCoord
-                new Vector3(1.0f, 1.0f, 1.0f)     // Color (white)
-            ),
-        ];
-        Mesh mesh2 = new Mesh(_vertices2);
-
-        // Position the second mesh differently so they don't overlap completely
-        mesh2.Position = new Vector3(0.0f, 0.0f, 0.5f);
-
-        Game.meshManager.Add(mesh);
-        Game.meshManager.Add(mesh2);
-
         // Light 1: Main bright white light from above-right
         Light light1 = new Light(
             position: new Vector3(3.0f, 4.0f, 3.0f),
@@ -86,5 +33,9 @@ partial class Game
         lightManager.AddLight(light2);
         lightManager.AddLight(light3);
 
+        Model sword = new Model("models/Sword.fbx");
+        modelManager.Add(sword);
     }
+
+   
 }

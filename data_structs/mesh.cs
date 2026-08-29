@@ -5,10 +5,9 @@ namespace Graphics;
 
 public class Mesh
 {
-    // OpenGL handles
     private int vao;
     private int vbo;
-    private int ebo; // Element Buffer Object 
+    private int ebo;
 
     // Vertex data
     private Vertex[] vertices;
@@ -16,29 +15,6 @@ public class Mesh
 
     private Texture texture;
 
-    // Transform properties
-    private Matrix4 model = Matrix4.CreateTranslation(0, 0, 0);
-    private Vector3 _position = Vector3.Zero;
-    private Vector3 _rotation = Vector3.Zero;
-    private Vector3 _scale = new Vector3(1.0f, 1.0f, 1.0f);
-    public Vector3 Position
-    {
-        get { return _position; }
-        set { _position = value; UpdateModelMatrix(); }
-    }
-    public Vector3 Rotation
-    { // in rad
-        get { return _rotation; }
-        set { _rotation = value; UpdateModelMatrix(); }
-    }
-    public Vector3 Scale
-    {
-        get { return _scale; }
-        set { _scale = value; UpdateModelMatrix(); }
-    }
-
-
-    // Constructor for non-indexed meshes
     public Mesh(Vertex[] vertices, string _texture = "textures/default.png", uint[] indices = null)
     {
         this.vertices = vertices;
@@ -101,24 +77,9 @@ public class Mesh
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
     }
 
-    public void UpdateModelMatrix()
-    {
-        model = Matrix4.Identity;
-
-        // Scale -> Rotate -> Translate
-        model = Matrix4.CreateScale(Scale) * model;
-
-        model = Matrix4.CreateRotationX(Rotation.X) * model;
-        model = Matrix4.CreateRotationY(Rotation.Y) * model;
-        model = Matrix4.CreateRotationZ(Rotation.Z) * model;
-
-        model = Matrix4.CreateTranslation(Position) * model;
-    }
 
     public void Draw()
     {
-        Game.shaderManager.SetModelMatrix(model);
-
         GL.BindVertexArray(vao);
 
         GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, IntPtr.Zero);
