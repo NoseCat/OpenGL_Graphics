@@ -35,6 +35,13 @@ partial class Game
 
         Model sword = new Model("models/Sword.fbx");
         modelManager.Add(sword);
+        sword.Rotation = new Vector3(0, 0, MathHelper.DegreesToRadians(90));
+
+        Model basic_geo = new Model("models/basic_geo.fbx");
+        modelManager.Add(basic_geo);
+        basic_geo.Rotation = new Vector3(MathHelper.DegreesToRadians(-90), 0, 0);
+        basic_geo.Position = basic_geo.Position - new Vector3(0, 0, 10);
+
     }
 
    

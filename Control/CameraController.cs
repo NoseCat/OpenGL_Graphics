@@ -5,7 +5,7 @@ public class CameraController
 {
     private  Camera camera;
     private Vector2 _lastMousePos = new Vector2(-1);
-    public float speed = 2.5f;
+    public float speed = 7.5f;
     public float sensitivity = 0.1f;
 
     public CameraController(Camera cam)

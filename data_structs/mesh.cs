@@ -80,12 +80,12 @@ public class Mesh
 
     public void Draw()
     {
+        texture.Bind(TextureUnit.Texture0);
+        Game.shaderManager.SetUniform("texture0", 0); 
+
         GL.BindVertexArray(vao);
 
         GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, IntPtr.Zero);
-
-        texture.Bind(TextureUnit.Texture0);
-        Game.shaderManager.SetUniform("texture0", 0); 
 
         GL.BindVertexArray(0);
     }

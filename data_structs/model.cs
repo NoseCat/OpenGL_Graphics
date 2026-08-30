@@ -55,7 +55,6 @@ public class Model
 
     public Model(string modelPath)
     {
-        //var modelPath = "models/Sword.fbx"; //.glb doesnt work, use .fbx
         using var importer = new AssimpContext();
         var scene = importer.ImportFile(modelPath, 
             PostProcessSteps.Triangulate | 
@@ -84,21 +83,16 @@ public class Model
             }
 
             //indecies
-            var indices = mesh.GetIndices().Select(i => (uint)i).ToArray(); //covert to uint
+            var indices = mesh.GetIndices().Select(i => (uint)i).ToArray(); //convert to uint
 
             //textures            
             string texturePath = "textures/default.png";
-            //string textureDir = "textures/";
-            //if (mesh.MaterialIndex >= 0 && scene.Materials.Count > mesh.MaterialIndex)
-            {
-                var material = scene.Materials[mesh.MaterialIndex];
-                //if (material.HasTextureDiffuse)
-                {
-                    texturePath = material.TextureDiffuse.FilePath;
-                    //if (!string.IsNullOrEmpty(texPath))
-                        //texturePath = Path.Combine(textureDir, Path.GetFileName(texPath));
-                }
-            }
+            var material = scene.Materials[mesh.MaterialIndex];
+            texturePath = material.TextureDiffuse.FilePath;
+            System.Console.WriteLine(texturePath);
+            string fileName = System.IO.Path.GetFileName(texturePath);
+            texturePath = System.IO.Path.Combine("textures", fileName);
+            System.Console.WriteLine(texturePath);
 
             meshes.Add(new Mesh(vertices, texturePath, indices));
         }
