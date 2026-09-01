@@ -13,29 +13,45 @@ public class Mesh
     private Vertex[] vertices;
     private uint[] indices;
 
-    private Texture texture;
+    private Material material;
 
-    public Mesh(Vertex[] vertices, string _texture = "textures/default.png", uint[] indices = null)
+    public Mesh(Vertex[] _vertices, string _texture = "textures/default.png", uint[] _indices = null)
     {
-        this.vertices = vertices;
-        if (indices == null || indices.Length == 0) //will cause issues if vertex count %3 is not 0
-        {
-            this.indices = new uint[vertices.Length];
-            for (uint i = 0; i < vertices.Length; i++)
-            {
-                this.indices[i] = i;
-            }
-        }
-        else
-            this.indices = indices;
 
-        texture = new Texture(_texture);
+        _indices = FillIndicesIfNull(_indices);
 
-        SetupMesh();
+        Material mat = new Material(_texture);
+
+        SetupMesh(_vertices, mat, _indices);
     }
 
-    private void SetupMesh()
+    public Mesh(Vertex[] _vertices, Material _material, uint[] _indices = null)
     {
+
+        _indices = FillIndicesIfNull(_indices);
+
+        SetupMesh(_vertices, _material, _indices);
+    }
+
+    private uint[] FillIndicesIfNull(uint[] _indices)
+    {
+        if (_indices == null || _indices.Length == 0) //will cause issues if vertex count %3 is not 0
+        {
+            _indices = new uint[vertices.Length];
+            for (uint i = 0; i < vertices.Length; i++)
+            {
+                _indices[i] = i;
+            }
+        }  
+        return _indices;
+    }
+
+    private void SetupMesh(Vertex[] vertices, Material mat, uint[] indices)
+    {
+        this.vertices = vertices;
+        this.material = mat;
+        this.indices = indices;
+
         // VAO
         vao = GL.GenVertexArray();
         GL.BindVertexArray(vao);
@@ -71,6 +87,11 @@ public class Mesh
         //offset by 3+3+2 floats to skip pos + normal + tex
         GL.EnableVertexAttribArray(3);
 
+        // Tangent (4)
+        GL.VertexAttribPointer(4, 3, VertexAttribPointerType.Float, false, Vertex.Size, 11 * sizeof(float));
+        //offset by 3+3+2+3 floats to skip pos + normal + tex + color
+        GL.EnableVertexAttribArray(4);
+
         // Unbind
         GL.BindVertexArray(0);
         GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
@@ -80,8 +101,7 @@ public class Mesh
 
     public void Draw()
     {
-        texture.Bind(TextureUnit.Texture0);
-        Game.shaderManager.SetUniform("texture0", 0); 
+        material.Apply();
 
         GL.BindVertexArray(vao);
 

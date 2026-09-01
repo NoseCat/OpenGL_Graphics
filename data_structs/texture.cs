@@ -25,7 +25,7 @@ public class Texture
     //     return new Texture(pixelData, width, height, generateMipmaps, textureUnit);
     // }
 
-    public Texture(string filePath, bool generateMipmaps = true, TextureUnit textureUnit  = TextureUnit.Texture0)
+    public Texture(string filePath, bool isSrgb = false, bool generateMipmaps = true, TextureUnit textureUnit  = TextureUnit.Texture0)
     {
         if (!File.Exists(filePath))
             throw new FileNotFoundException($"Texture file not found: {filePath}");
@@ -45,6 +45,15 @@ public class Texture
         Bind();
 
         SetDefaultParameters();
+        // PixelInternalFormat internalFormat;
+        // if (isSrgb)
+        // {
+        //     internalFormat = PixelInternalFormat.SrgbAlpha;
+        // }
+        // else
+        // {
+        //     internalFormat = PixelInternalFormat.Rgba;
+        // }
 
         // Upload pixel data to GPU
         GL.TexImage2D(

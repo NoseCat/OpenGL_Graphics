@@ -5,7 +5,7 @@ using Graphics;
 
 public class LightManager
 {
-    private List<Light> lights = new List<Light>();
+    public List<Light> lights = new List<Light>();
     private const int MAX_LIGHTS = 8;
     
     public void AddLight(Light light) { lights.Add(light); }
