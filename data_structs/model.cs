@@ -53,37 +53,37 @@ public class Model
         }
     }
 
-
-    private int CountMeshes(Node node, Scene scene)
-    {
-        int count = 0;
-        foreach (var meshIndex in node.MeshIndices)
-            count++;
-        foreach (var child in node.Children)
-            count += CountMeshes(child, scene);
-        return count;
-    }
-
     public Model(string modelPath)
     {
         using var importer = new AssimpContext();
         var scene = importer.ImportFile(modelPath, PostProcessSteps.Triangulate
-                | PostProcessSteps.FlipUVs);
+                | PostProcessSteps.FlipUVs
+                | PostProcessSteps.CalculateTangentSpace); //minimal to decrees the chances of failure
         if (scene == null || scene.RootNode == null)
             throw new Exception($"Failed to load model");
 
-        Console.WriteLine($"Loaded {scene.MeshCount} meshes.");
-        Console.WriteLine(CountMeshes(scene.RootNode, scene));
+        Console.WriteLine($"Scene meshes:      {scene.MeshCount}");
+        Console.WriteLine($"Scene materials:   {scene.MaterialCount}");
+        Console.WriteLine($"Scene textures:    {scene.TextureCount}");
+        Console.WriteLine($"Scene animations:  {scene.AnimationCount}");
+        Console.WriteLine($"Root node:         {scene.RootNode?.Name}");
         foreach (var mesh in scene.Meshes)
         {
             //vertex info
+            Console.WriteLine(
+                $"Mesh '{mesh.Name}': " +
+                $"vertices={mesh.VertexCount}, " +
+                $"faces={mesh.FaceCount}, " +
+                $"tangents={mesh.Tangents.Count}, " +
+                $"uvChannels={mesh.TextureCoordinateChannelCount}"
+            );
             var vertices = new Vertex[mesh.Vertices.Count];
             for (int i = 0; i < mesh.Vertices.Count; i++)
             {
                 var pos = mesh.Vertices[i];
-                var normal = mesh.Normals.Count > i ? mesh.Normals[i] : new Vector3D(0, 1, 0);
-                var tex = mesh.TextureCoordinateChannels[0]?.Count > i ? mesh.TextureCoordinateChannels[0][i] : new Vector3D(0, 0, 0);
-                var tangent = mesh.Tangents.Count > i ? mesh.Tangents[i] : new Vector3D(1, 0, 0);
+                var normal = mesh.Normals[i];
+                var tex = mesh.TextureCoordinateChannels[0][i];
+                var tangent = mesh.Tangents[i];
 
                 vertices[i] = new Vertex(
                     new Vector3(pos.X, pos.Y, pos.Z),
@@ -98,23 +98,21 @@ public class Model
             var indices = mesh.GetIndices().Select(i => (uint)i).ToArray(); //convert to uint
 
             //material     
-            var loadedMaterial = scene.Materials[mesh.MaterialIndex];
             var material = new Material();
+            var loadedMaterial = scene.Materials[mesh.MaterialIndex];
             //albedo
             if (loadedMaterial.HasTextureDiffuse)
             {
-                string texturePath = "textures/default.png";
-                texturePath = loadedMaterial.TextureDiffuse.FilePath;
-                string fileName = Path.GetFileName(texturePath);
-                material.Albedo = new Texture(Path.Combine("textures", fileName));
+                material.Albedo = LoadTexture(scene, loadedMaterial.TextureDiffuse.FilePath);
             }
             //normal
-            System.Console.WriteLine(loadedMaterial.HasTextureNormal);
+            Console.WriteLine($"Material: {loadedMaterial.Name}");
+            Console.WriteLine($"Diffuse: {loadedMaterial.HasTextureDiffuse}");
+            Console.WriteLine($"Normal:  {loadedMaterial.HasTextureNormal}");
+
             if (loadedMaterial.HasTextureNormal)
             {
-                string texturePath = loadedMaterial.TextureNormal.FilePath;
-                string fileName = Path.GetFileName(texturePath);
-                material.Normal = new Texture(Path.Combine("textures", fileName));
+                material.Normal = LoadTexture(scene, loadedMaterial.TextureNormal.FilePath);
             }
             //scalar
             material.Shininess = loadedMaterial.Shininess; //shiness
@@ -122,6 +120,26 @@ public class Model
             //add
             meshes.Add(new Mesh(vertices, material, indices));
         }
+    }
+
+    Texture LoadTexture(Scene scene, string path)
+    {
+        if (string.IsNullOrEmpty(path))
+            return new Texture("textures/default.png");
+
+        // Embedded texture: "*N" format
+        if (path.StartsWith("*"))
+        {
+            int texIndex = int.Parse(path.Substring(1));
+            var embTex = scene.Textures[texIndex];
+            
+            // embTex.CompressedData is byte[] for PNG/JPG when height == 0
+            return new Texture(embTex.CompressedData);
+        }
+
+        // External file
+        string fileName = Path.GetFileName(path);
+        return new Texture(Path.Combine("textures", fileName));
     }
     public void Dispose()
     {

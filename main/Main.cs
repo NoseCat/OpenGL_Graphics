@@ -10,7 +10,7 @@ partial class Game : GameWindow
     static public Camera camera = new Camera(new Vector3(0, 2, 5));
     CameraController controller = new CameraController(camera);
     
-    public static ShaderManager shaderManager = new();
+    public static ShaderManager shaderManager = new(Program.screen_resolution.X, Program.screen_resolution.Y);
     public static ModelManager modelManager = new();
     public static LightManager lightManager = new();
 

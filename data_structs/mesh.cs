@@ -108,6 +108,7 @@ public class Mesh
         GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, IntPtr.Zero);
 
         GL.BindVertexArray(0);
+        material.Unbind();
     }
 
     public void Dispose()

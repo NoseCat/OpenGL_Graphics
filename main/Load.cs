@@ -17,26 +17,22 @@ partial class Game
         // Light 2: Warm fill light from left-back
         Light light2 = new Light(
             position: new Vector3(-4.0f, 2.0f, -2.0f),
-            color: new Vector3(1.0f, 0.8f, 0.6f),  // Warm orange
+            color: new Vector3(1.0f, 0.2f, 0.2f), 
             intensity: 0.6f
         );
 
         // Light 3: Cool rim light from right-back
         Light light3 = new Light(
             position: new Vector3(4.0f, 1.0f, -4.0f),
-            color: new Vector3(0.4f, 0.6f, 1.0f),  // Cool blue
+            color: new Vector3(0.2f, 0.2f, 1.0f), 
             intensity: 0.4f
         );
 
-        // Add lights to manager
         lightManager.AddLight(light1);
         lightManager.AddLight(light2);
         lightManager.AddLight(light3);
 
-        //Model spear = new Model("models/spear.glb");
-        //modelManager.Add(spear);
-
-        Model sword = new Model("models/Sword.fbx");
+        Model sword = new Model("models/Sword.glb");
         modelManager.Add(sword);
         sword.Rotation = new Vector3(0, 0, MathHelper.DegreesToRadians(90));
 
@@ -45,10 +41,8 @@ partial class Game
         basic_geo.Rotation = new Vector3(MathHelper.DegreesToRadians(-90), 0, 0);
         basic_geo.Position = basic_geo.Position - new Vector3(0, 0, 10);
 
-        Model sphere = new Model("models/Sphere.fbx");
+        Model sphere = new Model("models/Sphere.glb");
         modelManager.Add(sphere);
         sphere.Position = sphere.Position + new Vector3(5, 0, 5);
     }
-
-
 }

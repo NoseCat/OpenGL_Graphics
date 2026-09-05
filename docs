@@ -1,0 +1,15 @@
+Packages used:
+
+OpenTK - to woek with opengl
+StbImageSharp - to work with textures
+//AssimpNet - for loading model files // doesnt work with glb
+AssimpNetter --version 6.0.5
+
+Models:
+.glb , embedded textures
+.fbx , textures need to be in the textures folder. Has trouble importing materials 
+
+Linux specific:
+ln -s /usr/lib/x86_64-linux-gnu/libdl.so.2 /usr/lib/x86_64-linux-gnu/libdl.so
+creates a link to a library that is needed for Assimp but was assimilated into another library without Assimp's knowledge
+libassimp-dev - needed to be installed

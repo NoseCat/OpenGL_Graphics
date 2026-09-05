@@ -25,7 +25,7 @@ public class Texture
     //     return new Texture(pixelData, width, height, generateMipmaps, textureUnit);
     // }
 
-    public Texture(string filePath, bool isSrgb = false, bool generateMipmaps = true, TextureUnit textureUnit  = TextureUnit.Texture0)
+    public Texture(string filePath, bool isSrgb = false, bool generateMipmaps = true, TextureUnit textureUnit = TextureUnit.Texture0)
     {
         if (!File.Exists(filePath))
             throw new FileNotFoundException($"Texture file not found: {filePath}");
@@ -93,14 +93,46 @@ public class Texture
         }
     }
 
-        // ADD THIS BIND METHOD
+    // From compressed bytes (PNG/JPG)
+    public Texture(byte[] compressedData, bool isSrgb = false, bool generateMipmaps = true, TextureUnit textureUnit = TextureUnit.Texture0)
+    {
+        ImageResult image;
+        using (var stream = new MemoryStream(compressedData))
+        {
+            image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+        }
+
+        Width = image.Width;
+        Height = image.Height;
+        TextureUnit = textureUnit;
+
+        texId = GL.GenTexture();
+        Bind();
+        SetDefaultParameters();
+
+        GL.TexImage2D(
+            TextureTarget.Texture2D,
+            0,
+            PixelInternalFormat.Rgba,
+            image.Width,
+            image.Height,
+            0,
+            PixelFormat.Rgba,
+            PixelType.UnsignedByte,
+            image.Data);
+
+        if (generateMipmaps)
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+        Unbind();
+    }
+
     public void Bind()
     {
         GL.ActiveTexture(TextureUnit);
         GL.BindTexture(TextureTarget.Texture2D, texId);
     }
 
-    // ADD THIS OVERLOAD TO BIND TO A DIFFERENT UNIT
     public void Bind(TextureUnit textureUnit)
     {
         GL.ActiveTexture(textureUnit);
